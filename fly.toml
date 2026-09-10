@@ -1,0 +1,30 @@
+# Fly.io deploy.
+#   fly launch --no-deploy            # creates the app, keep this file
+#   fly postgres create --name wallet-db --region <r> --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1
+#   fly postgres attach wallet-db     # sets DATABASE_URL as a secret
+#   fly deploy
+app = "wallet"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  DB_POOL_MAX = "10"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/health"
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "45s"
+
+# ADMIN_TOKEN: set with `fly secrets set ADMIN_TOKEN=...`
