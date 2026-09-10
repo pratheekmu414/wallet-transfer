@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.TransientDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -44,6 +46,15 @@ public class ApiExceptionHandler {
         // e.g. a transfer referencing a wallet id that does not exist (FK), or a check constraint.
         log.warn("data integrity violation: {}", rootMessage(ex));
         return body(HttpStatus.BAD_REQUEST, "bad_request", "request violates a data constraint");
+    }
+
+    @ExceptionHandler({TransientDataAccessException.class, DataAccessResourceFailureException.class})
+    public ResponseEntity<Map<String, Object>> handleTransient(Exception ex) {
+        // Deadlock victim that outlived its retries, lock timeout, or the DB briefly unreachable.
+        // Nothing was applied (the transaction rolled back) — the client should retry with the same
+        // idempotency key.
+        log.warn("transient database failure: {}", rootMessage(ex));
+        return body(HttpStatus.SERVICE_UNAVAILABLE, "try_again", "temporary database contention, retry");
     }
 
     @ExceptionHandler(Exception.class)

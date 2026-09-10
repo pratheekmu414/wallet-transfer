@@ -4,12 +4,13 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /build
 
-# Warm the dependency cache on its own layer so source-only changes rebuild fast.
+# Cache dependencies on their own layer so source-only changes rebuild fast.
+# (|| true: go-offline is best-effort; the package step below still has network.)
 COPY pom.xml .
-RUN mvn -B -q -Dmaven.test.skip=true dependency:go-offline
+RUN mvn -B -q dependency:go-offline -DskipTests || true
 
 COPY src ./src
-RUN mvn -B -q -Dmaven.test.skip=true clean package \
+RUN mvn -B -q clean package -DskipTests \
     && cp target/wallet.jar /build/app.jar
 
 # ---- runtime stage ----------------------------------------------------------

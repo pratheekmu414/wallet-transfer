@@ -22,6 +22,8 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    connect-retries: 10
+    connect-retries-interval: 3s
   jackson:
     property-naming-strategy: SNAKE_CASE
     default-property-inclusion: non_null
