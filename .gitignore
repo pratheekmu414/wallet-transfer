@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+*.log
+.env
+.DS_Store
+.mvn/wrapper/maven-wrapper.jar
+
+# Paytm-internal exercise material — not for the public repo.
+01-wallet-transfer-exercise.md
+01-wallet-transfer-RUBRIC.md
