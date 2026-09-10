@@ -1,0 +1,66 @@
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+admin:
+  token: ${ADMIN_TOKEN:dev-admin-token}
+
+spring:
+  application:
+    name: wallet
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/wallet}
+    username: ${SPRING_DATASOURCE_USERNAME:wallet}
+    password: ${SPRING_DATASOURCE_PASSWORD:wallet}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX:20}
+      minimum-idle: 2
+      pool-name: wallet-pool
+      connection-timeout: 10000
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+    deserialization:
+      accept-float-as-int: false
+      fail-on-unknown-properties: false
+    mapper:
+      accept-case-insensitive-enums: true
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info,prometheus
+      path-mapping:
+        prometheus: metrics
+        health: health
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: wallet
+    distribution:
+      # Request rate / latency (p99) / error rate all come from this server-request histogram.
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.paytm.wallet: INFO
+    org.flywaydb: INFO
