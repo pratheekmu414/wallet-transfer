@@ -3,9 +3,9 @@
 A small wallet service with peer-to-peer transfers, built for correctness under concurrency and
 failure. Spring Boot 3 (Java 21) + PostgreSQL, plain SQL via `JdbcTemplate`, Flyway migrations.
 
-- **Live URL:** _<fill in after deploy>_
+- **Live URL:** https://wallet-2f9t.onrender.com (Render, free web service + free Postgres)
 - **Public logs:** _<fill in — e.g. Render "Logs" tab or `render logs` stream>_
-- **Metrics:** `GET /metrics` (Prometheus) on the live URL
+- **Metrics:** [`GET /metrics`](https://wallet-2f9t.onrender.com/metrics) (Prometheus) on the live URL
 - **Write-up:** [WRITEUP.md](WRITEUP.md)
 
 ## Invariants
